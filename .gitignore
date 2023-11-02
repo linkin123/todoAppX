@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+vcs.xml
+deploymentTargetDropDown.xml
+workspace.xml
