@@ -1,6 +1,5 @@
 package com.linkin.todoappx.addtask.ui
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,28 +25,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 
-@Preview
 @Composable
-fun TasksScreen() {
+fun TasksScreen(taskViewModel: TaskViewModel) {
+
+    val showDialog: Boolean by taskViewModel.showDialog.observeAsState(false)
     Box(modifier = Modifier.fillMaxSize()) {
-        AddTasksDialog(true, onDismiss = {}, onTaskAdded = {})
+        AddTasksDialog(
+            showDialog,
+            onDismiss = { taskViewModel.onDialogClose() },
+            onTaskAdded = { taskViewModel.onTaskCreated(it) })
         FabDialog(
             Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            taskViewModel
         )
     }
 }
 
 @Composable
-fun FabDialog(modifier: Modifier) {
+fun FabDialog(modifier: Modifier, taskViewModel: TaskViewModel) {
     FloatingActionButton(onClick = {
+                                   taskViewModel.onShowDialogClick()
     }, modifier = modifier) {
         Icon(Icons.Filled.Add, contentDescription = "")
     }
