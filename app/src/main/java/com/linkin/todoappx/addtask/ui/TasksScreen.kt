@@ -1,12 +1,11 @@
 package com.linkin.todoappx.addtask.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,8 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -51,7 +50,8 @@ fun TasksScreen(taskViewModel: TaskViewModel) {
         FabDialog(
             Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp), taskViewModel)
+                .padding(16.dp), taskViewModel
+        )
         TaskList(taskViewModel)
     }
 }
@@ -59,27 +59,35 @@ fun TasksScreen(taskViewModel: TaskViewModel) {
 @Composable
 fun TaskList(taskViewModel: TaskViewModel) {
 
-    val myTask : List<TaskModel> = taskViewModel.task
+    val myTask: List<TaskModel> = taskViewModel.task
     LazyColumn {
-        items(myTask, key = {it.id}){task ->
-            ItemTask( task, taskViewModel )
+        items(myTask, key = { it.id }) { task ->
+            ItemTask(task, taskViewModel)
         }
     }
 }
 
 @Composable
-fun ItemTask(taskModel: TaskModel, taskViewModel: TaskViewModel){
-    Card (
+fun ItemTask(taskModel: TaskModel, taskViewModel: TaskViewModel) {
+    Card(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp), elevation = 8.dp){
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    taskViewModel.onItemRemove(taskModel)
+                })
+            }, elevation = 8.dp
+    ) {
 
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
-            Text(text = taskModel.task, modifier = Modifier
-                .padding(horizontal = 4.dp)
-                .weight(1f))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = taskModel.task, modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .weight(1f)
+            )
             Checkbox(checked = taskModel.selected, onCheckedChange = {
-                    taskViewModel.onCheckBoxSelected(taskModel)
+                taskViewModel.onCheckBoxSelected(taskModel)
             })
         }
     }
@@ -88,7 +96,7 @@ fun ItemTask(taskModel: TaskModel, taskViewModel: TaskViewModel){
 @Composable
 fun FabDialog(modifier: Modifier, taskViewModel: TaskViewModel) {
     FloatingActionButton(onClick = {
-                                   taskViewModel.onShowDialogClick()
+        taskViewModel.onShowDialogClick()
     }, modifier = modifier) {
         Icon(Icons.Filled.Add, contentDescription = "")
     }
@@ -124,7 +132,7 @@ fun AddTasksDialog(show: Boolean, onDismiss: () -> Unit, onTaskAdded: (String) -
                 Spacer(modifier = Modifier.size(16.dp))
                 Button(onClick = {
                     onTaskAdded(myTask)
-                    myTask=""
+                    myTask = ""
                 }, modifier = Modifier.fillMaxWidth()) {
                     Text(text = "Añadir tarea")
                 }

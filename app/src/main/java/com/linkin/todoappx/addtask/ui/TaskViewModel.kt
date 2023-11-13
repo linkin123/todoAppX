@@ -1,6 +1,5 @@
 package com.linkin.todoappx.addtask.ui
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,7 +29,16 @@ class TaskViewModel @Inject constructor(): ViewModel() {
     }
 
     fun onCheckBoxSelected(taskModel: TaskModel) {
+        val index = _task.indexOf(taskModel)
+        _task[index] = _task[index].let {
+            it.copy(selected = !it.selected)
+        }
+    }
 
+    fun onItemRemove(taskModel: TaskModel) {
+        _task.removeIf {
+            it.id == taskModel.id
+        }
     }
 
 
